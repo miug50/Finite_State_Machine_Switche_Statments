@@ -8,104 +8,56 @@
 using namespace std;			// cout, endl
 using namespace this_thread;	// sleep_for
 using namespace chrono;			// seconds, milliseconds
+string input = "";
 
-int main()
-{
+
+int main(){
+
 	bool program_running = true;
-	enum class states { CALM = 1, ALERT = 2, HAPPY = 3, SUPPRISED = 4, AGITATED = 5, ANGRY = 6 } program_state{};
-	program_state = states::CALM;
-	string input = "";
 	
+	class BaseState
+	{
+	public:
+		virtual void run() = 0;
+	};
+	class ExtendedStateCALM : public BaseState
+	{
+		virtual void run() { std::cout << "I'm Calm." << std::endl; };
+	};
+	class ExtendedStateALERT : public BaseState
+	{
+		virtual void run() { std::cout << "What was that? (ALERT)." << std::endl; };
+	};
+	class ExtendedStateHAPPY : public BaseState
+	{
+		virtual void run() { std::cout << "I'm Happy" << std::endl; };
+	};
+	class ExtendedStateAGITATED : public BaseState
+	{
+		virtual void run() { std::cout << "I see Someone. (AGITATED)." << std::endl; };
+	};
+	class ExtendedStateSUPPRISED : public BaseState
+	{
+		virtual void run() { std::cout << "He's aggressive?? (SUPPRIESED)" << std::endl; };
+	};
+	class ExtendedStateANGRY : public BaseState
+	{
+		virtual void run() { std::cout << "I'm ANGRY" << std::endl; };
+	};
 
-	std::cout << "Starting Finite State Machine" << endl;
-	std::cout << "bellow are a list of things you can do." << endl;
-	std::cout << "" << endl;
-	std::cout << "make noise: noise" << endl;
-	std::cout << "Crack a joke: joke" << endl;
-	std::cout << "see an enemy: spotted" << endl;
+	ExtendedStateCALM* CALM = new ExtendedStateCALM;
+	ExtendedStateALERT* ALERT = new ExtendedStateALERT;
+	ExtendedStateHAPPY* HAPPY = new ExtendedStateHAPPY;
+	ExtendedStateAGITATED* AGITATED = new ExtendedStateAGITATED;
+	ExtendedStateSUPPRISED* SUPPREISED = new ExtendedStateSUPPRISED;
+	ExtendedStateANGRY* ANGRY = new ExtendedStateANGRY;
 
-	do {
-			switch (program_state)
-			{
-			case states::CALM:
-				if (input == "noise") {
-					program_state = states::ALERT;
-					break;
-				}
-				if(input == "joke"){
-					program_state = states::HAPPY;
-					break;
-				}
-				if (input == "spotted") {
-					program_state = states::AGITATED;
-					break;
-				}
-				break;
-			case states::ALERT:
-				if (input == "nonoise") {
-					program_state = states::CALM;
-					break;
-				}
-				break;
-			case states::HAPPY:
-				cout << "I'm Happy!" << endl;
-				break;
-			case states::SUPPRISED:
-				if (input == "calm") {
-					program_state = states::AGITATED;
-					break;
-				}
-				if (input == "attacked") {
-					program_state = states::ANGRY;
-					break;
-				}
-				break;
-			case states::AGITATED:
-				if (input == "aggresive") {
-					program_state = states::SUPPRISED;
-					break;
-				}
-				if (input == "friendly") {
-					program_state = states::CALM;
-					break;
-				}
-				break;
-			case states::ANGRY:
-				if (input == "moveaway") {
-					program_state = states::CALM;
-					break;
-				}
-				break;
-			}
+	BaseState* current_state = CALM;
 
-			//output State
-
-			switch (program_state)
-			{
-			case states::CALM:
-				cout << "-CALM-" << endl;
-				break;
-			case states::ALERT:
-				cout << "-ALERT-" << endl;
-				break;
-			case states::HAPPY:
-				cout << "-HAPPY-" << endl;
-				break;
-			case states::SUPPRISED:
-				cout << "-SUPPRISED-" << endl;
-				break;
-			case states::AGITATED:
-				cout << "-AGITATED-" << endl;
-				break;
-			case states::ANGRY:
-				cout << "-ANGRY-" << endl;
-				break;
-			}
-			input = "";
-			cin >> input;
-
-		// Sleep the current thread for 1000 milliseconds. Can be repalce with seconds(1)
-		sleep_for(milliseconds(1000));
+	do{
+		
+		current_state->run();
+		std::this_thread::sleep_for(2000ms);
 
 		if (_kbhit())
 		{
@@ -116,10 +68,42 @@ int main()
 			{
 				program_running = false;
 			}
+			if (input_char == 97)
+			{
+				current_state = AGITATED;
+			}
+			if (input_char == 115)
+			{
+				current_state = ALERT;
+			}
+			if (input_char == 51)
+			{
+				current_state = HAPPY;
+			}
+			if (input_char == 52)
+			{
+				current_state = SUPPREISED;
+			}
+			if (input_char == 53)
+			{
+				current_state = ANGRY;
+			}
+			if (input_char == 54)
+			{
+				current_state = CALM;
+			}
 		}
 
 	} while(program_running);
 
-	cout << "Ending Finite State Machine" << endl;
+	delete CALM;
+	delete ALERT;
+	delete HAPPY;
+	delete AGITATED;
+	delete SUPPREISED;
+	delete ANGRY;
+	std::cout << "Ending Finite State Machine" << endl;
 	return 0;
 }
+
+	
